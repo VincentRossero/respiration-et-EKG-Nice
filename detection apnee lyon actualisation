@@ -110,7 +110,7 @@ apnea_amplitude_s10 = resp_cycles[mask_crise_s10 & (resp_cycles['total_amplitude
 mask_amplitude = pd.concat([apnea_amplitude_baseline, apnea_amplitude_s5, apnea_amplitude_s10])
 
 
-show (mask_amplitude)
+#show (mask_amplitude)
 
 # on classe dans consecutive groups les indexs du dataframe d'amplitude les groupes d'indices consecutifs 
 index_amplitude = mask_amplitude.index
@@ -135,6 +135,7 @@ for group in consecutive_groups:
 show (premiers_cycles)
 
 total_apnea=pd.concat([apnea_cycles,premiers_cycles], axis = 0,ignore_index=True)
+
 total_apnea =total_apnea.drop_duplicates(subset='inspi_index')
 
 total_apnea = total_apnea.sort_values(by='inspi_index')
@@ -145,7 +146,8 @@ total_apnea = total_apnea.sort_values(by='inspi_index')
 
 mask_baseline_apnea = (total_apnea['inspi_time'] < date_injection) & (total_apnea['inspi_time'] > (date_injection-duree_baseline))
 mask_crise_apnea = (total_apnea['inspi_time']< end_time) & (total_apnea['inspi_time'] > crise)
-
+mask_crise_apnea_s5 = (total_apnea['inspi_time']< crise+300) & (total_apnea['inspi_time'] > crise)
+mask_crise_apnea_s10 = (total_apnea['inspi_time']< crise+600) & (total_apnea['inspi_time'] > crise+300)
 
 fig,ax= plt.subplots(nrows=1,sharex=True)
 
@@ -174,4 +176,33 @@ for index, row in total_apnea[mask_crise_apnea].iterrows():
 
 plt.show()
 
+
+#recuperation des INFOS d'interet 
+
+#Mask baseline 
+
+nb_baseline = total_apnea[mask_baseline_apnea].shape[0]
+temps_total_baseline= total_apnea[mask_baseline_apnea]['total_duration'].sum()
+average_baseline = total_apnea[mask_baseline_apnea]['total_duration'].mean()
+print ("nombre d'apnee baseline",nb_baseline)
+print ("temps passé en apnée baseline",temps_total_baseline)
+print ("temps moyen d'une apnee baseline",nb_baseline)
+
+#Mask seizure 5 minutes
+
+nb_s5 = total_apnea[mask_crise_apnea_s5].shape[0]
+temps_total_s5= total_apnea[mask_crise_apnea_s5]['total_duration'].sum()
+average_s5 = total_apnea[mask_crise_apnea_s5]['total_duration'].mean()
+print ("nombre d'apnee baseline",nb_s5)
+print ("temps passé en apnée baseline",temps_total_s5)
+print ("temps moyen d'une apnee baseline",nb_s5)
+
+#Mask seizure 10 minutes 
+
+nb_s10 = total_apnea[mask_crise_apnea_s10].shape[0]
+temps_total_s10 = total_apnea[mask_crise_apnea_s10]['total_duration'].sum()
+average_s10 = total_apnea[mask_crise_apnea_s10]['total_duration'].mean()
+print("nombre d'apnee baseline", nb_s10)
+print("temps passé en apnée baseline", temps_total_s10)
+print("temps moyen d'une apnee baseline", average_s10)
 
