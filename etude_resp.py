@@ -22,13 +22,17 @@ crise=43410
 pre_ictal=43110 #5min avant crise 
 post_ictal=43410+31 #fin crise 
 end_time = post_ictal +1200
-'''
-crise=46510 
-pre_ictal=46210 #5min avant crise 
-post_ictal=46510+62 #fin crise 
+
+CRISE 3
+crise=46110 
+pre_ictal=45810 #5min avant crise 
+post_ictal=46110+62 #fin crise 
 end_time = post_ictal +1200
-
-
+'''
+crise=7437 
+pre_ictal=7137 #5min avant crise 
+post_ictal=7437+55 #fin crise 
+end_time = post_ictal +1200
 
 fichier_edf = "240407_G48A_461_459.EDF"
 raw = mne.io.read_raw_edf(fichier_edf,include='1b_temp')
@@ -41,10 +45,12 @@ print(chanel_name)
 time=raw.times
 
 respi = raw.pick_channels(['1b_temp']).get_data()[0]
-respi = iirfilt(respi, srate, lowcut = 0.5, highcut = 30)
+respi = iirfilt(respi, srate, lowcut = 1.5, highcut = 20)
 respi = respi[:52200*100]
 time= time[:52200*100]
 
+
+#print(ancienne_respi.shape)
 print (respi.shape)
 print (time.shape)
 
@@ -70,31 +76,38 @@ apnea_cycles_baseline = resp_cycles[(resp_cycles['cycle_duration'] > automatic_t
 apnea_cycles_baseline = apnea_cycles_baseline[apnea_cycles_baseline.index.to_series().diff() != 1]
 apnea_times_sec_baseline = apnea_cycles_baseline['inspi_time'].values
 '''
-fig,axs= plt.subplots(nrows=2,sharex=True)
-'''
+fig,axs= plt.subplots(nrows=3,sharex=True)
+
+
 ax=axs[0]
 ax.plot(time,respi)
+ax.plot(time,respi,color='orange')
 ax.scatter(time[inspi_index], resp[inspi_index], marker='o', color='green')
 ax.scatter(time[expi_index], resp[expi_index], marker='o', color='red')
 ax.axvline(x=crise, color='r', linestyle='--') 
 ax.axvline(x=post_ictal, color='r', linestyle='--') 
 
+'''
 for t in apnea_times_sec_baseline:
     ax.axvline(t, color = 'k', lw = 2)
+
 '''
-ax=axs[0]
+
+ax=axs[1]
 ax.plot(resp_cycles['inspi_time'],60/resp_cycles['cycle_duration'])
 ax.set_title('Frequence respiratoire ')
 ax.axvline(x=pre_ictal, color='k', linestyle='--') 
+ax.axhline(y=199.16144672988233, color='k', linestyle='--')
 ax.axvline(x=crise, color='r', linestyle='--') 
 ax.axvline(x=post_ictal, color='r', linestyle='--')  
 ax.set_ylabel('frequence en nombre de cycle par minute')
 ax.plot()
 
-ax=axs[1]
+ax=axs[2]
 ax.plot(resp_cycles['inspi_time'],resp_cycles['total_amplitude'])
 ax.set_title('Amplitude respiratoire')
 ax.axvline(x=pre_ictal, color='k', linestyle='--') 
+ax.axhline(y=1.3087275939357745, color='k', linestyle='--')
 ax.axvline(x=crise, color='r', linestyle='--') 
 ax.axvline(x=post_ictal, color='r', linestyle='--') 
 ax.set_ylabel('Amplitude totale par cycle ')
@@ -109,5 +122,5 @@ grouped_data = calculate_means(resp_cycles, post_ictal, end_time)
 
 print(grouped_data[['minute', 'respiratory_rate', 'total_amplitude']])
 
-plot_graphs(grouped_data, 'respiratory_rate', 'Fréquence respiratoire (cycles par minute)', 'Évolution de la fréquence respiratoire minute par minute (20 minutes post-ictale)')
-plot_graphs(grouped_data, 'total_amplitude', 'Amplitude moyenne (unités)', 'Évolution de l\'amplitude moyenne minute par minute (20 minutes post-ictale)')
+plot_graphs(grouped_data, 'respiratory_rate', 'Fréquence respiratoire (cycles par minute)', 'Évolution de la fréquence respiratoire minute par minute (20 minutes post-ictale)', 199.16144672988233)
+plot_graphs(grouped_data, 'total_amplitude', 'Amplitude moyenne (unités)', 'Évolution de l\'amplitude moyenne minute par minute (20 minutes post-ictale)', 1.3087275939357745)

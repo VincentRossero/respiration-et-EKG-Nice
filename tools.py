@@ -103,12 +103,15 @@ def calculate_means(resp_cycles, post_ictal, end_time):
     grouped_data['respiratory_rate'] = 60 / grouped_data['cycle_duration']
     return grouped_data
 
-def plot_graphs(grouped_data, metric, ylabel, title):
+
+def plot_graphs(grouped_data, metric, ylabel, title, avg_value):
     plt.figure(figsize=(10, 6))
     plt.bar(grouped_data['minute'], grouped_data[metric], width=0.8, align='center', color='skyblue', edgecolor='black')
+    plt.axhline(y=avg_value, color='red', linestyle='--', linewidth=2, label=f'Moyenne: {avg_value}')
     plt.xlabel('Minutes post-ictale')
     plt.ylabel(ylabel)
     plt.title(title)
     plt.grid(axis='y', linestyle='--', alpha=0.7)
     plt.xticks(grouped_data['minute'])
+    plt.legend()
     plt.show()

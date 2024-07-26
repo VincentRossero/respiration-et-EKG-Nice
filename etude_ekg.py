@@ -7,10 +7,12 @@ import mne
 import pandas as pd
 from pandasgui import show
 
-crise=43410 
-pre_ictal=43110 #5min avant crise 
-post_ictal=43410+31 #fin crise 
+
+crise=46110 
+pre_ictal=45810 #5min avant crise 
+post_ictal=46110+62 #fin crise 
 end_time = post_ictal +1200
+
 
 fichier_edf = "240407_G48A_461_459.EDF"
 raw = mne.io.read_raw_edf(fichier_edf,include='1b_EKG')
@@ -46,7 +48,7 @@ ax.plot(time, instantaneous_rate)
 ax.set_ylabel('heart rate [bpm]')
 ax.axvline(x=crise, color='r', linestyle='--') 
 ax.axvline(x=post_ictal, color='r', linestyle='--') 
-ax.axvline(x=pre_ictal, color='k', linestyle='--') 
+ax.axvline(x=end_time, color='k', linestyle='--') 
 ax.set_xlabel('time [s]')
 
 plt.show()
